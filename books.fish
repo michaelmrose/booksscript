@@ -1,9 +1,17 @@
 function books
-    set query $argv
+    set selector $argv[1]
+    set criteria author title publisher series tag tags
+    if contains $selector $criteria
+        set query $argv[2..-1]
+    else
+        set selector title
+        set query $argv
+    end
 
-    set filenames (calibredb list -s "title:~^.*"{$query}"" -f formats --for-machine | grep /home | cut -d '"' -f2 | grep -i "$query")
-    set pdfs (filter filenames pdf)
-    set epubs (filter filenames epub)
+    # set filenames (find-books $query)
+    set filenames (find-books2 $selector $query)
+    set pdfs (filter filenames .pdf)
+    set epubs (filter filenames .epub)
     set filenames $epubs $pdfs
     set books (apply extract-title filenames | sort | uniq)
     
@@ -36,7 +44,6 @@ function books
                         # lets find the filename which contains the title 
                         # that we want and open it
                         if match $title $query
-                            # set thebook (echo $j | sed 's/_/:/g')
                             open $j
                         end
                     end
@@ -45,12 +52,24 @@ function books
             end
             # so no exact match so show a menu and pipe the users choice to 
             # books where it will now be an exact match 
-            fuzzymenu $books | pipeit books
+            fuzzymenu (println $books | sed 's/_/:/g')
+            #fuzzymenu sets global fquery variable because fzf is broken within variable sub in fish
+            books $fquery
         end
 end
 
 function find-books
-    set returnval (calibredb list -s "title:~^.*"{$argv}"" -f formats --for-machine | grep /home | cut -d '"' -f2 | grep -i "$argv")
+    set query $argv
+    set correctedquery (echo $query | sed 's/:/_/g')
+    set returnval (calibredb list -s "title:~^.*"{$query}"" -f formats --for-machine | grep /home | cut -d '"' -f2 | grep -i "$correctedquery")
+    println $returnval
+ end
+
+function find-books2
+    set selector $argv[1]
+    set query $argv[2..-1]
+    set correctedquery (echo $query | sed 's/:/_/g')
+    set returnval (calibredb list -s "$selector:~^.*"{$query}"" -f formats --for-machine | grep /home | cut -d '"' -f2 | grep -i "$correctedquery")
     println $returnval
  end
 
