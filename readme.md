@@ -7,6 +7,7 @@ To use please source both script files at fish start up and install fzf the fuzz
 Usage
 
 books [words in title]
+
 books [title,author,tag,tags,series] [query]
 
 If your result returns more than one possible match the result will be piped through fzf which will filter the remaining results as you type
