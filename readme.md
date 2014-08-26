@@ -12,5 +12,4 @@ books [title,author,tag,tags,series] [query]
 
 If your result returns more than one possible match the result will be piped through fzf which will filter the remaining results as you type
 
- To see it in action on youtube you may view [a youtube video](link,https://www.youtube.com/watch?v=C1BZZUn7rbA&feature=youtu.be&hd=1)
 ![demo gif](https://github.com/michaelmrose/booksscript/blob/master/demo.gif "demo")
