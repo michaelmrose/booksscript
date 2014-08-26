@@ -10,7 +10,7 @@ function books
         set query $argv
     end
 
-    set filenames (find-books2 $selector $query)
+    set filenames (find-books $selector $query)
     # set filenames (find-books $query)
     set books (apply extract-title filenames | sort | uniq)
 
@@ -19,21 +19,7 @@ function books
         set $filetype $filetpe $i
     end
 
-    # echo pdfs
-    # println $pdf
-    # echo epub
-    # println $epub
-    # echo filetypes
-    # echo $filetypes | sort | uniq
-        
-    # echo query $query
-    # echo filenames $filenames
-    # echo pdfs $pdf
-    # echo epubs $epub
-    # echo books $books
-
     set nbooks (count $books)
-    # echo nbooks $nbooks
 
     switch $nbooks
         case 0
@@ -80,25 +66,12 @@ function books
 end
 
 function find-books
-    set query $argv
-    set correctedquery (echo $query | sed 's/:/_/g')
-    set returnval (calibredb list -s "title:~^.*"{$query}"" -f formats --for-machine | grep /home | cut -d '"' -f2 | grep -i "$correctedquery")
-    println $returnval
- end
-
-function find-books2
     set selector $argv[1]
     set query $argv[2..-1]
     set correctedquery (echo $query | sed 's/:/_/g')
     set returnval (calibredb list -s "$selector:~^.*"{$query}"" -f formats --for-machine | grep /home | cut -d '"' -f2 | grep -i "$correctedquery")
     println $returnval
  end
-
-function find-exact-book
-    set query $argv
-    set returnval (find-books2 title $query | extract-title | grep -i -E "^$query\$" | sort | uniq)
-    println $returnval
-end
 
 function extract-title
     if exists $argv
